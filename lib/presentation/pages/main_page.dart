@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_task_weather_app/data/bloc/weather_data_bloc.dart';
@@ -15,14 +17,25 @@ class _MainPageState extends State<MainPage> {
 
   TextEditingController textController = TextEditingController();
 
+  String currentCityName = "Omsk";
+
   @override
   void initState() {
     super.initState();
-    fetchData("Omsk");
+    fetchData(currentCityName);
   }
 
   void fetchData(String cityName) async{
     _bloc.add(LoadWeatherDataForCity(cityName: cityName));
+  }
+
+  void updateData(){
+    Timer.periodic(
+      const Duration(hours: 1), 
+      (timer){
+        fetchData(currentCityName);
+      }
+    );
   }
 
   @override
@@ -59,15 +72,18 @@ class _MainPageState extends State<MainPage> {
                                 color: Colors.black.withOpacity(0.5)
                               )
                             ),
+
                             style: const TextStyle(
                               fontFamily: "Poppins",
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                               color: Colors.black
                             ),
+
                             onSubmitted: (value) {
                               fetchData(textController.text);
                               textController.clear();
+                              setState(() => currentCityName = textController.text);
                             },
                           ),
                         ),
